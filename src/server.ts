@@ -6,11 +6,16 @@ import { ReviewService } from './core/reviewService';
 import { Logger } from './utils/logger';
 import { getPullRequestDiff } from './bitbucket/getPullRequestDiff';
 import crypto from 'crypto';
-import ngrok from 'ngrok';
 import { BitbucketWebhookPayload } from './types/bitbucket';
 
 // Load environment variables
 dotenv.config();
+
+// Only import ngrok in development
+let ngrok: typeof import('ngrok');
+if (process.env.NODE_ENV !== 'production') {
+  ngrok = require('ngrok');
+}
 
 // Validate required environment variables
 const requiredEnvVars = [
@@ -18,8 +23,12 @@ const requiredEnvVars = [
   'GEMINI_API_KEY',
   'BITBUCKET_REPO_OWNER',
   'BITBUCKET_REPO_SLUG',
-  'NGROK_AUTH_TOKEN',
 ];
+
+// Only require NGROK_AUTH_TOKEN in development
+if (process.env.NODE_ENV !== 'production') {
+  requiredEnvVars.push('NGROK_AUTH_TOKEN');
+}
 
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
@@ -128,14 +137,20 @@ app.use('/', router);
 // Start server and ngrok
 async function startServer() {
   try {
-    // Start ngrok
-    const url = await ngrok.connect({
-      addr: PORT,
-      authtoken: process.env.NGROK_AUTH_TOKEN,
-    });
-    
-    Logger.info(`ngrok tunnel established at: ${url}`);
-    Logger.info(`Webhook URL: ${url}/webhook/bitbucket`);
+    let webhookUrl = `http://localhost:${PORT}`;
+
+    // Start ngrok only in development
+    if (process.env.NODE_ENV !== 'production') {
+      const url = await ngrok.connect({
+        addr: PORT,
+        authtoken: process.env.NGROK_AUTH_TOKEN,
+      });
+      
+      Logger.info(`ngrok tunnel established at: ${url}`);
+      webhookUrl = url;
+    }
+
+    Logger.info(`Webhook URL: ${webhookUrl}/webhook/bitbucket`);
 
     // Start server
     app.listen(PORT, () => {
