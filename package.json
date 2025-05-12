@@ -1,0 +1,33 @@
+{
+  "name": "ai-code-reviewer",
+  "version": "1.0.0",
+  "description": "AI-powered code reviewer for Bitbucket pull requests",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "keywords": [
+    "code-review",
+    "ai",
+    "bitbucket",
+    "gemini"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/genai": "^0.13.0",
+    "@types/express": "^5.0.1",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "express": "^5.1.0",
+    "ngrok": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}
