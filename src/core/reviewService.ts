@@ -1,5 +1,6 @@
-import { AiClient } from '../api/geminiClient';
+import {  } from '../api/geminiClient';
 import { BitbucketClient } from '../bitbucket/bitbucketClient';
+import { AiClientInterface } from '../interfaces/iAiClient';
 import { Logger } from '../utils/logger';
 
 /**
@@ -7,7 +8,7 @@ import { Logger } from '../utils/logger';
  */
 export class ReviewService {
   constructor(
-    private aiClient: AiClient,
+    private aiClient: AiClientInterface,
     private bitbucketClient: BitbucketClient
   ) {}
 

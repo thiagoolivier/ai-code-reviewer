@@ -1,17 +1,11 @@
 import { GoogleGenAI } from '@google/genai';
 import { Logger } from '../utils/logger';
-
-/**
- * Interface for AI code analysis clients
- */
-export interface AiClient {
-  analyzeCode(diff: string): Promise<string>;
-}
+import { AiClientInterface } from '../interfaces/iAiClient';
 
 /**
  * Implementation of AiClient using Google's Gemini API
  */
-export class GeminiClient implements AiClient {
+export class GeminiClient implements AiClientInterface {
   private ai: GoogleGenAI;
 
   constructor(apiKey: string) {

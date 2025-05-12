@@ -1,54 +1,92 @@
 # AI Code Reviewer
 
-An AI-powered code reviewer for Bitbucket pull requests that uses Google's Gemini API to analyze code changes and provide feedback.
+An AI-powered code reviewer for Bitbucket pull requests that uses Google's Gemini API to analyze code changes and provide feedback automatically through webhooks.
 
 ## Features
 
 - Automated code review for Bitbucket pull requests
+- Webhook-based integration with Bitbucket
 - AI-powered code analysis using Google's Gemini API
 - Automatic comment posting on pull requests
-- Bitbucket Pipelines integration
+- Secure webhook signature verification
 
-## Setup
+## Quick Setup
 
-1. Clone the repository
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd ai-code-reviewer
+   ```
+
 2. Install dependencies:
    ```bash
    npm install
    ```
-3. Copy `.env.example` to `.env` and fill in your credentials:
-   ```bash
-   cp .env.example .env
+
+3. Create a `.env` file with the following variables:
+   ```env
+   # Bitbucket Configuration
+   BITBUCKET_TOKEN=your_bitbucket_token
+   BITBUCKET_REPO_OWNER=your_repo_owner
+   BITBUCKET_REPO_SLUG=your_repo_slug
+   BITBUCKET_WEBHOOK_SECRET=your_webhook_secret
+
+   # Google Gemini API
+   GEMINI_API_KEY=your_gemini_api_key
+
+   # Ngrok Configuration (for development)
+   NGROK_AUTH_TOKEN=your_ngrok_token
+
+   # Optional: Server Configuration
+   PORT=3000
    ```
 
-## Environment Variables
+4. Start the server:
+   ```bash
+   # Development
+   npm run dev
 
-- `BITBUCKET_TOKEN`: Your Bitbucket API token
-- `GEMINI_API_KEY`: Your Google Gemini API key
-- `BITBUCKET_REPO_OWNER`: Repository owner/organization
-- `BITBUCKET_REPO_SLUG`: Repository slug
-- `BITBUCKET_PR_ID`: Pull request ID
+   # Production
+   npm run build
+   npm start
+   ```
+
+5. Set up Bitbucket Webhook:
+   - Go to your Bitbucket repository settings
+   - Navigate to "Webhooks"
+   - Click "Add webhook"
+   - Set the URL to your ngrok URL + `/webhook/bitbucket` (e.g., `https://your-ngrok-url.ngrok.io/webhook/bitbucket`)
+   - Set the events to trigger on:
+     - Pull Request: Created
+     - Pull Request: Updated
+   - Add the same secret key you set in `BITBUCKET_WEBHOOK_SECRET`
+
+## How It Works
+
+1. When a pull request is created or updated, Bitbucket sends a webhook to your server
+2. The server verifies the webhook signature for security
+3. The code changes are analyzed using Google's Gemini AI
+4. The analysis is automatically posted as a comment on the pull request
 
 ## Development
 
-```bash
-# Run in development mode
-npm run dev
+The server includes:
+- Health check endpoint at `/health`
+- Webhook endpoint at `/webhook/bitbucket`
+- Automatic ngrok tunnel creation for development
+- Error handling and logging
 
-# Build the project
-npm run build
+## Environment Variables
 
-# Run the built project
-npm start
-```
-
-## Bitbucket Pipelines
-
-The project includes a Bitbucket Pipelines configuration that automatically runs the code review on pull requests. The pipeline will:
-
-1. Install dependencies
-2. Build the project
-3. Run the code review
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `BITBUCKET_TOKEN` | Bitbucket API token | Yes |
+| `BITBUCKET_REPO_OWNER` | Repository owner/organization | Yes |
+| `BITBUCKET_REPO_SLUG` | Repository slug | Yes |
+| `BITBUCKET_WEBHOOK_SECRET` | Secret for webhook signature verification | Yes |
+| `GEMINI_API_KEY` | Google Gemini API key | Yes |
+| `NGROK_AUTH_TOKEN` | Ngrok authentication token | Yes |
+| `PORT` | Server port (default: 3000) | No |
 
 ## License
 
