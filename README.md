@@ -9,6 +9,7 @@ An AI-powered code reviewer for Bitbucket pull requests that uses Google's Gemin
 - AI-powered code analysis using Google's Gemini API
 - Automatic comment posting on pull requests
 - Secure webhook signature verification
+- Development mode with ngrok tunneling
 
 ## Quick Setup
 
@@ -34,7 +35,10 @@ An AI-powered code reviewer for Bitbucket pull requests that uses Google's Gemin
    # Google Gemini API
    GEMINI_API_KEY=your_gemini_api_key
 
-   # Ngrok Configuration (for development)
+   # Environment Configuration
+   NODE_ENV=development  # or 'production'
+
+   # Ngrok Configuration (only required in development)
    NGROK_AUTH_TOKEN=your_ngrok_token
 
    # Optional: Server Configuration
@@ -43,19 +47,21 @@ An AI-powered code reviewer for Bitbucket pull requests that uses Google's Gemin
 
 4. Start the server:
    ```bash
-   # Development
-   npm run dev
+   # Development (with ngrok)
+   NODE_ENV=development npm run dev
 
-   # Production
-   npm run build
-   npm start
+   # Production (without ngrok)
+   NODE_ENV=production npm run build
+   NODE_ENV=production npm start
    ```
 
 5. Set up Bitbucket Webhook:
    - Go to your Bitbucket repository settings
    - Navigate to "Webhooks"
    - Click "Add webhook"
-   - Set the URL to your ngrok URL + `/webhook/bitbucket` (e.g., `https://your-ngrok-url.ngrok.io/webhook/bitbucket`)
+   - Set the URL to your webhook URL:
+     - Development: `https://your-ngrok-url.ngrok.io/webhook/bitbucket`
+     - Production: `https://your-production-domain.com/webhook/bitbucket`
    - Set the events to trigger on:
      - Pull Request: Created
      - Pull Request: Updated
@@ -73,20 +79,21 @@ An AI-powered code reviewer for Bitbucket pull requests that uses Google's Gemin
 The server includes:
 - Health check endpoint at `/health`
 - Webhook endpoint at `/webhook/bitbucket`
-- Automatic ngrok tunnel creation for development
+- Automatic ngrok tunnel creation in development mode
 - Error handling and logging
 
 ## Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `BITBUCKET_TOKEN` | Bitbucket API token | Yes |
-| `BITBUCKET_REPO_OWNER` | Repository owner/organization | Yes |
-| `BITBUCKET_REPO_SLUG` | Repository slug | Yes |
-| `BITBUCKET_WEBHOOK_SECRET` | Secret for webhook signature verification | Yes |
-| `GEMINI_API_KEY` | Google Gemini API key | Yes |
-| `NGROK_AUTH_TOKEN` | Ngrok authentication token | Yes |
-| `PORT` | Server port (default: 3000) | No |
+| Variable | Description | Required | Environment |
+|----------|-------------|----------|-------------|
+| `BITBUCKET_TOKEN` | Bitbucket API token | Yes | All |
+| `BITBUCKET_REPO_OWNER` | Repository owner/organization | Yes | All |
+| `BITBUCKET_REPO_SLUG` | Repository slug | Yes | All |
+| `BITBUCKET_WEBHOOK_SECRET` | Secret for webhook signature verification | Yes | All |
+| `GEMINI_API_KEY` | Google Gemini API key | Yes | All |
+| `NODE_ENV` | Environment mode ('development' or 'production') | Yes | All |
+| `NGROK_AUTH_TOKEN` | Ngrok authentication token | Yes | Development only |
+| `PORT` | Server port (default: 3000) | No | All |
 
 ## License
 
