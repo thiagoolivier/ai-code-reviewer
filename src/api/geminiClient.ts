@@ -1,6 +1,6 @@
-import { GoogleGenAI } from '@google/genai';
-import { Logger } from '../utils/logger';
-import { AiClientInterface } from '../interfaces/iAiClient';
+import { GoogleGenAI } from "@google/genai";
+import { Logger } from "../utils/logger";
+import { AiClientInterface } from "../interfaces/iAiClient";
 
 /**
  * Implementation of AiClient using Google's Gemini API
@@ -14,7 +14,7 @@ export class GeminiClient implements AiClientInterface {
 
   async analyzeCode(diff: string): Promise<string> {
     try {
-      Logger.info('Analyzing code with Gemini');
+      Logger.info("Analyzing code with Gemini");
 
       // Check if diff is empty or just whitespace
       if (!diff || diff.trim().length === 0) {
@@ -29,39 +29,60 @@ export class GeminiClient implements AiClientInterface {
             parts: [
               {
                 text: `
-                  You are a senior software engineer reviewing a pull request. 
-                  Analyze the following diff and provide ONLY your findings and recommendations.
-                  Try to be friendly while being direct and concise. If there's nothing significant to comment on, just say so.
-                  Answer in brazilian portuguese.
-                  
-                  Format your response as a bullet list of findings.
-                  Each finding should be clear and actionable.
-                  Do not include explanations about your role or process.
+                  You are an AI code review assistant. 
+                  Your task is to analyze pull request diffs from Bitbucket and provide clear, helpful, and constructive feedback to developers.
+
+                  Goal of the Review:
+                  - Identify issues related to readability, best practices, potential bugs, and code consistency.
+                  - Suggest improvements for style, structure, or maintainability.
+                  - Ensure the code follows good development practices, architecture standards, security, and performance guidelines.
+
+                  General Guidelines:
+                  - Review only the diff. the added, modified, or removed lines.
+                  - Avoid commenting on code outside the diff, unless strictly necessary for context.
+                  - Be concise, objective, and constructive.
+                  - For each issue found, explain why it is a problem and suggest a fix.
+                  - Positive feedback is welcome. you may praise improvements or good practices briefly.
+
+                  For each issue found, explain why it is a problem and suggest a fix.
+
+                  Positive feedback is welcome. You may praise improvements or good practices briefly.
+
+                  Focus Areas:
+                  - Obvious bugs or logic issues
+                  - Repeated or duplicated code
+                  - Variable and function naming
+                  - Function size and responsibility
+                  - Violations of separation of concerns (e.g. SRP)
+                  - Performance (e.g. nested loops, poor data structures)
+                  - Security and input validation
+                  - Style consistency with the rest of the codebase (if visible)
                   
                   Diff to analyze:
                   ---
                   ${diff}
                   ---
-                `
-              }
-            ]
-          }
+                `,
+              },
+            ],
+          },
         ],
         config: {
-          systemInstruction: "You are a direct and concise code reviewer. Provide only actionable feedback in bullet points.",
+          systemInstruction:
+            "You are an AI code review assistant. Your task is to analyze pull request diffs from Bitbucket and provide clear, helpful, and constructive feedback to developers.",
           maxOutputTokens: 500,
           temperature: 0.5,
         },
       });
 
       if (!response.text) {
-        throw new Error('No response from Gemini');
+        throw new Error("No response from Gemini");
       }
 
       return response.text;
     } catch (error) {
-      Logger.error('Error analyzing code with Gemini', error as Error);
+      Logger.error("Error analyzing code with Gemini", error as Error);
       throw error;
     }
   }
-} 
+}
